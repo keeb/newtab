@@ -2,34 +2,152 @@
 <html>
     <head>
         <meta name="" content="">
-        <title>poop</title>
+        <title>keeb's new tab</title>
         <style>
         
          body {
             background: black;
+            color: white;
             padding: 20px;
             font-size: 3em;
             font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
          }
-         li {
-            padding: 50px;
-         }
+
          a {
             color: white;
          }
+
+         .link-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 20px;
+            margin-top: 20px;
+         }
+         
+         .link-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            background: red;
+         }
+
+         input {
+            font-size: 8rem;
+            color: gray;
+         }
+         #searchResults {
+            margin-top: 20px;
+            font-size: 1em;
+            background: red;
+         }
+         .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: right;
+            padding-right: 20px;
+            margin-right: 20px;
+            font-size: .3em;
+         }
         </style>
+        <script lang="text/javascript">
+            var links = [
+                {text: "reddit", url: "https://reddit.com"},
+                {text: "hacker news", url: "https://news.ycombinator.com"},
+                {text: "jellyfin", url: "http://jellyfin.treehouse.local"},
+                {text: "twitter", url: "http://tweetdeck.twitter.com"},
+                {text: "gmail", url: "http://gmail.com"},
+                {text: "transmission", url: "http://treehouse:9091/transmission/web/"},
+                {text: "youtube", url: "http://youtube.com"},
+
+            ];
+
+            // capture all text input on the page
+            document.onkeypress = function (e) {
+
+                e = e || window.event;
+
+                //if enter is pressed, go to the first link
+                if(e.keyCode == 13) {
+                    location.href = document.getElementById("searchResults").firstChild.href;
+                }
+                var charCode = typeof e.which == "number" ? e.which : e.keyCode;
+                if (charCode) {
+                    // do nothing if the search bar is focused
+                    if (document.activeElement == document.getElementById("search")) {
+                        console.log("selected so i am not doing anything");
+                        return;
+                    } else {
+                        document.getElementById("search").value += String.fromCharCode(charCode);
+                    }
+                }
+                search();
+            };
+
+
+            // create a function that searches for text inside of a javascript array and offers suggestions 
+            function search() {
+                var input = document.getElementById("search").value;
+                // reset if blank
+                if (input == "") {
+                    document.getElementById("searchResults").innerHTML = "";
+                    return;
+                }
+                var suggestions = [];
+                for (var i = 0; i < links.length; i++) {
+                    if (links[i].text.includes(input) || links[i].url.includes(input)) {
+                        suggestions.push(links[i]);
+                    }
+                }
+                console.log("suggestions: " + suggestions.forEach(element => {console.log(element.text)}));
+                if (suggestions.length == 0) {
+                    suggestions.push({text: "no results found", url: "https://google.com/search?q=" + input});
+                }
+                autocomplete(suggestions);
+            }
+
+            // create an autocomplete function that takes an array of suggestions and displays them in a list
+            function autocomplete(suggestions) {
+                document.getElementById("searchResults").innerHTML = "";
+
+                // Add the matching links to the search results
+                for (var i = 0; i < suggestions.length; i++) {
+                var link = suggestions[i];
+                var a = document.createElement("a");
+                a.href = link.url;
+                a.innerHTML = link.text;
+                document.getElementById("searchResults").appendChild(a);
+                document.getElementById("searchResults").appendChild(document.createElement("br"));
+                }
+            }
+        </script>
     </head>
-    <body>
-        <div class="links">
-            <ul>
-                <li><a href="https://reddit.com">reddit</a></li>
-                <li><a href="https://news.ycombinator.com">hacker news</a></li>
-                <li><a href="http://jellyfin.treehouse.local">jellyfin</a></li>
-                <li><a href="http://tweetdeck.twitter.com">twitter</a></li>
-                <li><a href="http://gmail.com">gmail</a></li>
-                <li><a href="http://treehouse:9091/transmission/web/">transmission</a></li>
-                <li><a hresf=""></a></li>
-            </ul>
+    <body onload="document.getElementById('search').focus();">
+        <div class="header">
+            <h1>keeb's new tab</h1>
+        </div>
+        <div class="search">
+            <input type="text" id="search" onkeyup="search()">
+        </div>
+        <div id="searchResults">
+
+        </div>
+        <div id="links" class="link-grid">
+            <script>
+                console.log("executed outside of script tag");
+                links.forEach(element => {
+                    
+                    var item = document.createElement("div");
+                    item.className = "link-card"
+                    item.innerHTML = "<a href='" + element.url + "'>" + element.text + "</a>";
+                    document.getElementById("links").appendChild(item);
+                });
+            </script>
+        </div>
+        <div class="footer">
+            <p>made by keeb</p>
         </div>
     </body>
 </html>
